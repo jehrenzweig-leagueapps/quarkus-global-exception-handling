@@ -1,0 +1,26 @@
+package com.example.exceptions.handlers
+
+import com.example.exceptions.CustomException
+import com.example.models.ProblemDetails
+import javax.ws.rs.core.Response
+import javax.ws.rs.ext.ExceptionMapper
+import javax.ws.rs.ext.Provider
+
+
+@Provider
+class CustomExceptionHandler : ExceptionMapper<CustomException> {
+    override fun toResponse(e: CustomException): Response {
+        var problemDetails = ProblemDetails(
+            status = Response.Status.BAD_REQUEST,
+            detail = "Something bad happened.",
+            data = mapOf("someValue" to e.someValue)
+        )
+
+        var response = Response
+            .status(problemDetails.status)
+            .entity(problemDetails)
+            .build()
+
+        return response
+    }
+}

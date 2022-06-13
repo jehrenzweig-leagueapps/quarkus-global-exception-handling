@@ -2,26 +2,31 @@ package com.example.controllers
 
 import com.example.exceptions.CustomException
 import com.example.models.ProblemDetails
-import io.quarkus.vertx.web.Param
-import io.quarkus.vertx.web.Route
 import io.smallrye.mutiny.Uni
 import org.jboss.logging.Logger
-import javax.inject.Singleton
+import org.jboss.resteasy.reactive.RestPath
+import javax.ws.rs.GET
+import javax.ws.rs.Path
+import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 
-@Singleton
+@Path("")
 class HelloWorldController {
     private val logger = Logger.getLogger(HelloWorldController::class.java.name)
 
-    @Route(methods = [Route.HttpMethod.GET], path = "/greetings", produces = [MediaType.TEXT_PLAIN])
-    fun greetings(): Uni<String> {
-        return Uni.createFrom().item("Greetings!")
+    @GET
+    @Path("/greetings")
+    @Produces(MediaType.TEXT_PLAIN)
+    fun greetings2(): String {
+        return "Greetings!"
     }
 
-    @Route(methods = [Route.HttpMethod.GET], path = "/greetings/:name", produces = [MediaType.TEXT_PLAIN])
-    fun greetingsToPerson(@Param name: String): Uni<String> {
+    @GET
+    @Path("/greetings/{name}")
+    @Produces(MediaType.TEXT_PLAIN)
+    fun greetingsToPerson(@RestPath name: String): Uni<String> {
         if (name == "null") {
             val customException = CustomException("Argument \"name\" contains an invalid value.")
             throw customException
@@ -30,7 +35,9 @@ class HelloWorldController {
         return Uni.createFrom().item("Greetings, ${name}!")
     }
 
-    @Route(methods = [Route.HttpMethod.GET], path = "/problem", produces = [MediaType.TEXT_PLAIN])
+    @GET
+    @Path("/problem")
+    @Produces(MediaType.APPLICATION_JSON)
     fun problem(): Uni<ProblemDetails> {
         var problemDetails = ProblemDetails(
             status = Response.Status.BAD_REQUEST,
